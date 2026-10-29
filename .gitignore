@@ -1,0 +1,19 @@
+# Arduino build output
+build/
+*.hex
+*.elf
+*.bin
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Secrets (Google Sheets / dashboard credentials)
+credentials.json
+*.env
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
