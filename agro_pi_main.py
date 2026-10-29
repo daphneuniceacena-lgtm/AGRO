@@ -1,6 +1,8 @@
 """
 AGRO - Raspberry Pi main script
 
+Hello! This is the main script for AGRO's Raspberry Pi. I used a Raspberry Pi 4 for this project. I am looking forward to upgrading to the next versions. 
+
 - Webcam -> YOLO11n (primary detector)
 - If YOLO finds nothing, the TFLite SSD model runs on the same frame (fallback).
   Set RUN_BOTH = True to always run both and merge the results.
@@ -35,7 +37,7 @@ import numpy as np
 
 from soil_forecast import SoilForecaster
 
-# ---------------- Config ----------------
+#Config
 SERIAL_PORT = "/dev/ttyACM0"
 BAUD = 9600
 CAMERA_INDEX = 0
@@ -61,7 +63,7 @@ DASHBOARD_URL = os.environ.get("AGRO_DASHBOARD_URL", "")   # e.g. https://your-d
 DASHBOARD_KEY = os.environ.get("AGRO_DASHBOARD_KEY", "")   # keep keys out of the code
 
 
-# ---------------- Arduino link ----------------
+#Arduino 
 class ArduinoLink:
     FIELDS = ["soil", "temp", "hum", "water", "dist", "batt", "pump", "auto"]
 
@@ -95,7 +97,7 @@ class ArduinoLink:
         self.ser.close()
 
 
-# ---------------- Detectors ----------------
+#Detectors
 class YoloDetector:
     def __init__(self):
         from ultralytics import YOLO
@@ -141,8 +143,7 @@ class SSDDetector:
             data = img
         self.interp.set_tensor(self.inp["index"], np.expand_dims(data, 0))
         self.interp.invoke()
-        # Standard TF detection export order: boxes, classes, scores, count.
-        # If your model orders them differently, change these indices.
+        # Standard TF detection export order: boxes, classes, scores, counts
         boxes = self.interp.get_tensor(self.outs[0]["index"])[0]
         classes = self.interp.get_tensor(self.outs[1]["index"])[0]
         scores = self.interp.get_tensor(self.outs[2]["index"])[0]
@@ -159,7 +160,7 @@ class SSDDetector:
         return out
 
 
-# ---------------- Helpers ----------------
+#Helpers
 def draw(frame, dets, tag):
     for name, conf, (x1, y1, x2, y2), src in dets:
         color = (0, 200, 0) if src == "yolo" else (0, 160, 255)
@@ -196,7 +197,7 @@ def post_dashboard(counts, sensors):
         print("[dashboard] post failed:", e)
 
 
-# ---------------- Main ----------------
+#Main
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--show", action="store_true", help="show a preview window")
