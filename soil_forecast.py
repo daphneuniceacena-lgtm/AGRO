@@ -1,6 +1,8 @@
 """
 AGRO soil drying forecast.
 
+Hello this is meant to show the forecast for AGRO.
+
 Model (after watering, soil moisture dries toward an equilibrium):
     theta(t) = theta_eq + (theta0 - theta_eq) * exp(-t / tau)
 
@@ -14,6 +16,8 @@ which is an ordinary straight-line fit (np.polyfit).
 
 tau changes with temperature and humidity (evaporation). After a few drying episodes,
 ln(tau) = c0 + c1*T + c2*RH is fitted so a new episode can get an early estimate.
+
+Good Luck and Have fun! Keep Acing!
 """
 
 import json
@@ -32,7 +36,7 @@ class SoilForecaster:
         self.episodes = []              # each: {"t": [], "soil": [], "temp": [], "hum": []}
         self.tau_coef = None
 
-    # ---------- data ----------
+    # data
     def add_reading(self, t, soil, temp=None, hum=None):
         ep = self.episodes[-1] if self.episodes else None
         if ep is None or soil - ep["soil"][-1] > self.jump:
@@ -53,7 +57,7 @@ class SoilForecaster:
             with open(path) as f:
                 self.episodes = json.load(f)
 
-    # ---------- fitting ----------
+    # fitting
     def fit_episode(self, ep):
         """Return dict(tau, theta_eq, rms, n) in seconds / %, or None if the data can't be fitted."""
         t, y = np.array(ep["t"]), np.array(ep["soil"])
@@ -89,7 +93,7 @@ class SoilForecaster:
         self.eq_median = float(np.median(r[:, 3]))
         return self.tau_coef
 
-    # ---------- prediction ----------
+    # prediction
     def _time_to_threshold(self, soil_now, tau, theta_eq):
         if soil_now <= self.threshold:
             return 0.0
@@ -117,7 +121,6 @@ class SoilForecaster:
 
 
 if __name__ == "__main__":
-    # Synthetic self-test of the math only. Not real sensor data.
     rng = np.random.default_rng(1)
     TAU, EQ, START, THR = 3600.0, 15.0, 60.0, 35.0
     true_total = TAU * math.log((START - EQ) / (THR - EQ))
