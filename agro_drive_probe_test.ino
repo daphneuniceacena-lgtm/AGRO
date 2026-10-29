@@ -1,13 +1,13 @@
 /*
   AGRO - drive + obstacle avoidance + probe test
   - Drives forward and avoids obstacles
-  - Every 10 s of driving: stops, lowers the probe (servo), shows the soil result, raises the probe, continues
-  - LCD shows MOCK data while driving (soil sensor is disconnected)
-  - While the probe is down, the LCD says DRY
+  - Every 10 s of driving: stops, lowers the probe (servo), shows the soil result, raises the probe, continues 
+  - DISCLAIMER: This won't give you the soil readings yet! Just a code to test your actuator and drive. 
 
+  Hello! The goal of this is to help you test the drive and actuator mechanism. Ensure that, you install the following libraries below. 
   Library needed: LiquidCrystal I2C  (Servo is built in)
 
-  Pins (same layout as before):
+  Pins:
     D2  HC-SR04 TRIG        D7  HC-SR04 ECHO
     D3  L298N ENA           D4  IN1     D6  IN2      (drive motor)
     D5  L298N ENB           D8  IN3     D11 IN4      (steering motor)
@@ -15,13 +15,15 @@
     D12 pump relay (kept OFF here)
     A0  soil moisture AO
     A4  LCD SDA             A5  LCD SCL
+
+    Good luck and have fun! Keep Acing!
 */
 
 #include <Servo.h>
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 
-// ---------- Pins ----------
+//Pins
 #define TRIG_PIN  2
 #define ECHO_PIN  7
 #define ENA       3
@@ -34,7 +36,7 @@
 #define PUMP_PIN  12
 #define SOIL_PIN  A0
 
-// ---------- Settings (adjust these) ----------
+//Settings
 const bool USE_MOCK_SOIL = true;         // true: always shows DRY. false: reads the real sensor on A0
 const int  SOIL_DRY_ABOVE_RAW = 500;     // real sensor: raw reading above this = DRY
 
@@ -48,16 +50,13 @@ const int DRIVE_SPEED = 180;                  // 0-255
 const int STEER_PWM   = 255;                  // 0-255, lower it if the steering strains
 const int OBSTACLE_CM = 25;
 
-// Mock readings shown on the LCD while driving
-const int MOCK_SOIL = 42, MOCK_WATER = 80, MOCK_TEMP = 29, MOCK_HUM = 65;
-
-// ---------- Objects ----------
+//Objects
 Servo probe;
-LiquidCrystal_I2C lcd(0x27, 16, 2);   // try 0x3F if the screen stays blank
+LiquidCrystal_I2C lcd(0x27, 16, 2);   // feel free to try 0x3F if the screen stays blank!
 
 unsigned long driveStart = 0;
 
-// ---------- Motor helpers ----------
+//Motor Helpers
 void driveForward() { digitalWrite(IN1, HIGH); digitalWrite(IN2, LOW);  analogWrite(ENA, DRIVE_SPEED); }
 void driveBack()    { digitalWrite(IN1, LOW);  digitalWrite(IN2, HIGH); analogWrite(ENA, DRIVE_SPEED); }
 void driveStop()    { digitalWrite(IN1, LOW);  digitalWrite(IN2, LOW);  analogWrite(ENA, 0); }
@@ -98,7 +97,7 @@ void moveProbe(int target) {
   }
 }
 
-// ---------- LCD helper (pads each line to 16 chars so old text is wiped) ----------
+// LCD Helper
 char lastLine[2][17] = {"", ""};
 void lcdLine(uint8_t row, const char *text) {
   char buf[17];
@@ -147,7 +146,7 @@ void probeStop() {
   delay(300);
 }
 
-// ---------- Setup / loop ----------
+//Setup
 void setup() {
   digitalWrite(PUMP_PIN, HIGH);          // relay OFF (active LOW), set before pinMode
   pinMode(PUMP_PIN, OUTPUT);
