@@ -105,11 +105,10 @@ Run: `python3 agro_pi_main.py` (add `--show` for a preview, `--no-serial` withou
 
 If `weights/agro_plants.pt` is missing, the script uses the stock `yolo11n.pt` and labels it as stock in the log and on screen. Dashboard settings go in the `AGRO_DASHBOARD_URL` and `AGRO_DASHBOARD_KEY` environment variables, not in the code.
 
-## Math docs (`docs/`)
+## Math doc (`docs/`)
 
 | File | Contents |
 |---|---|
-| `ace_liner_v2_math.md` | Sensor position estimate, wiggle and damping model, PD tuning, intersection logic, speed limit on curves |
 | `agro_soil_forecast_math.md` | Drying model, how it is fitted, temperature and humidity dependence, how to test it |
 
 ## Calibration
