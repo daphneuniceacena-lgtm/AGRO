@@ -1,6 +1,8 @@
 /*
   AGRO - Arduino Uno firmware
-  Libraries (Library Manager): Servo (built in), LiquidCrystal I2C, DHT sensor library (Adafruit) + Adafruit Unified Sensor
+
+  Hello! This is for the firmware of Arduino UNO for AGRO. Ensure that, alongside the code, you install the following libraries below:
+  Libraries (Library Manager): Servo (built-in), LiquidCrystal I2C, DHT sensor library (Adafruit) + Adafruit Unified Sensor
 
   Serial protocol (9600 baud, newline-terminated), Pi -> Arduino:
     F  B  L  R  S        drive forward / back / steer left / steer right / stop
@@ -13,6 +15,8 @@
     WATERMODE:1/0        auto watering from soil reading on/off
   Arduino -> Pi, every 2 s:
     DATA,<soil%>,<tempC>,<hum%>,<waterLevel%>,<distCm>,<battV>,<pump>,<auto>
+
+    Good Luck and Have fun!
 */
 
 #include <Servo.h>
@@ -20,7 +24,7 @@
 #include <LiquidCrystal_I2C.h>
 #include <DHT.h>
 
-// ---------- Pins ----------
+// Pin Allocation
 #define TRIG_PIN   2
 #define ECHO_PIN   7
 #define ENA        3    // drive motor speed (PWM)
@@ -36,7 +40,7 @@
 #define WATER_PIN  A1
 #define BATT_PIN   A2
 
-// ---------- Calibration (CHANGE THESE) ----------
+// Calibration
 const int SOIL_DRY_RAW = 620;   // reading with probe in air
 const int SOIL_WET_RAW = 260;   // reading with probe in water
 const int WATER_EMPTY_RAW = 0;
@@ -54,12 +58,12 @@ const unsigned long WATER_COOLDOWN  = 600000UL;  // 10 min between auto watering
 const unsigned long SOIL_INTERVAL   = 300000UL;  // auto soil check every 5 min
 const unsigned long FAILSAFE_MS     = 1500;      // manual drive stops if Pi goes quiet
 
-// ---------- Objects ----------
+// Objective
 Servo probe;
-LiquidCrystal_I2C lcd(0x27, 16, 2);  // try 0x3F if blank
+LiquidCrystal_I2C lcd(0x27, 16, 2);  // 0x3F if blank
 DHT dht(DHT_PIN, DHT22);
 
-// ---------- State ----------
+// State
 int driveSpeed = 180;
 bool autoMode = false;
 bool autoWater = true;
@@ -71,7 +75,7 @@ unsigned long lastSoilCheck = 0, lastWatered = 0;
 int soilPct = -1;
 float tempC = NAN, hum = NAN;
 
-// ---------- Helpers ----------
+// Helpers
 void driveForward() { digitalWrite(IN1, HIGH); digitalWrite(IN2, LOW);  analogWrite(ENA, driveSpeed); moving = true; }
 void driveBack()    { digitalWrite(IN1, LOW);  digitalWrite(IN2, HIGH); analogWrite(ENA, driveSpeed); moving = true; }
 // Steering motor: hold = turn, release = spring returns wheels to center.
@@ -139,7 +143,7 @@ void avoidObstacle() {
   steerOff();
 }
 
-// ---------- Serial ----------
+// Serial
 void handleCommand(String c) {
   c.trim();
   if (c.length() == 0) return;
@@ -189,7 +193,7 @@ void updateLcd() {
   lcd.print(pumpOn ? " P" : "  ");
 }
 
-// ---------- Setup / loop ----------
+// Setup
 void setup() {
   digitalWrite(PUMP_PIN, HIGH);          // relay OFF before pinMode to avoid a glitch
   pinMode(PUMP_PIN, OUTPUT);
