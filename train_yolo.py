@@ -1,4 +1,6 @@
 """
+Hello! This is where you will be fine-tuning YOLO 11n with your own plant photos. I didn't upload my own dataset.
+
 Fine-tune YOLO11n on your own plant photos.
 Run this on a PC or Google Colab with a GPU, not on the Pi.
 
